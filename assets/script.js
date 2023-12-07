@@ -43,28 +43,27 @@ function APICall(event) {
                         loadForecast(data);
                         storeForecast(data);
                         addHistory(data.city.name);
-                        console.log(data); // list[i].dt (unicode)
+                        console.log(data);
                     });
             });
     }
 }
 
 function loadForecast(report) {
-    document.querySelector("#city-name").textContent = "Current Weather in " + report.city.name; // ADD DATE
-    document.querySelector("#main-temp").textContent = "Temp: " + report.list[0].main.temp + " F";
+    document.querySelector("#city-name").textContent = "Current Weather in " + report.city.name + " today, " + dayjs(report.list[0].dt * 1000).format('MM/DD/YYYY');
+    document.querySelector("#main-temp").textContent = "Temp: " + report.list[0].main.temp + " °F";
     document.querySelector("#main-wind").textContent = "Wind: " + report.list[0].wind.speed + " mph";
     document.querySelector("#main-humid").textContent = "Humidity: " + report.list[0].main.humidity + " %";
     document.querySelector("#main-img").setAttribute('src',"https://openweathermap.org/img/wn/" + report.list[0].weather[0].icon + "@2x.png");
-    // render top portion
-                
-    // for loop to render cards
+    
     var forecastEl = document.querySelector("#forecast");
     for (p = 0; p < 5; p++) {
-        // ADD DATE
+        var newDay = dayjs(report.list[p*8 + 7].dt * 1000);
+        forecastEl.children[p+1].children[0].textContent = dayjs(newDay).format('MM/DD/YYYY');
         forecastEl.children[p+1].children[1].setAttribute('src',"https://openweathermap.org/img/wn/" + report.list[p].weather[0].icon + "@2x.png");
-        forecastEl.children[p+1].children[2].textContent = "Temp: " + report.list[p].main.temp + " F";
-        forecastEl.children[p+1].children[3].textContent = "Wind: " + report.list[p].wind.speed + " mph";
-        forecastEl.children[p+1].children[4].textContent = "Humidity: " + report.list[p].main.humidity + " %";
+        forecastEl.children[p+1].children[2].textContent = "Temp: " + report.list[p*8 + 7].main.temp + " °F";
+        forecastEl.children[p+1].children[3].textContent = "Wind: " + report.list[p*8 + 7].wind.speed + " mph";
+        forecastEl.children[p+1].children[4].textContent = "Humidity: " + report.list[p*8 + 7].main.humidity + " %";
     }
 }
 
@@ -88,7 +87,6 @@ function addHistory(city) {
 }
 
 function findForecast(reportName) {
-    console.log("find function passed")
     var storedArray = JSON.parse(localStorage.getItem('reports'));
     for (n = 0; n < storedArray.length; n++) {
         if (reportName == storedArray[n].city.name) {
